@@ -119,7 +119,7 @@ function initExtension (extensionsApi) {
   }
 
   function urlValueChangeHandler (value) {
-    snippetTitleUrlElement.value = 'https://www.codeblick.de/' + (value || '')
+    snippetTitleUrlElement.innerHTML = 'https://www.codeblick.de/' + (value || '')
   }
 
   function updateMetaTitle () {
