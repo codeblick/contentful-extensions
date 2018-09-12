@@ -9,8 +9,8 @@
     .cf-form-hint span.is-right {
       float: right;
     }
-    .cf-form-hint span.is-red {
-      color: rgb(223, 53, 55);
+    .is-red {
+      color: rgb(223, 53, 55) !important;
     }
   </style>
 </head>
@@ -19,7 +19,7 @@
 <div id="app">
   <div class="cf-form-field">
     <div class="cf-form-field">
-      <input type="text" class="cf-form-input input-title" v-model="slug">
+      <input type="text" class="cf-form-input input-title" :class="{'is-red': isNoSlug}" v-model="slug">
       <div class="cf-form-hint">
         <span :class="{'is-red': slug.length > 256}">{{ slug.length }} characters</span>
         <span class="is-right">Requires less than 256 characters</span>
@@ -78,6 +78,11 @@ const vm = new Vue({
         .replace(/\s+/g, '-')
         .replace(/[^\w\-]+/g, '')
         .replace(/\-\-+/g, '-')
+    }
+  },
+  computed: {
+    isNoSlug () {
+      return /^-/.test(this.slug) || /-$/.test(this.slug)
     }
   }
 })
