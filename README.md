@@ -15,7 +15,8 @@ If you wan't to install the extension just pass this url to contentful:
 
 ## Slug
 
-This extension creates a URL friendly string from the user input. It extends the "Short text" type.
+This extension creates a URL friendly string from the user input. If the slug is not changed it will default to
+a slugified version of the field "entryTitle". It extends the "Short text" type.
 
 [You can find a demo here.](https://codeblick.github.io/contentful-extensions/slug/demo.html)
 

@@ -33,8 +33,10 @@ const vm = new Vue({
   el: '#app',
   data: {
     slug: '',
+    entryTitle: '',
     api: null,
-    valueSet: false
+    valueSet: false,
+    valueEntryTitleSet: false
   },
   watch: {
     slug (value, oldValue) {
@@ -49,11 +51,21 @@ const vm = new Vue({
       this.api = api
       api.window.startAutoResizer()
       api.field.onValueChanged(this.onValueChange)
+      api.entry.fields.entryTitle.onValueChanged(this.onEntryTitleChange)
     },
     onValueChange (value) {
       if (this.valueSet === false) {
-        this.slug = this.toSlug(value) || ''
+        this.slug = this.toSlug(value || '')
         this.valueSet = true
+      }
+    },
+    onEntryTitleChange (value) {
+      if (this.valueEntryTitleSet === false) {
+        this.entryTitle = value || ''
+        this.valueEntryTitleSet = true
+      } else if (this.slug === this.toSlug(this.entryTitle)) {
+        this.entryTitle = value || ''
+        this.slug = this.toSlug(this.entryTitle)
       }
     },
     setField () {
