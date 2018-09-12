@@ -91,16 +91,6 @@ function initExtension (extensionsApi) {
   let fieldDetachValueChangeHandler
   let urlFieldDetachValueChangeHandler
 
-  if (!local) {
-    extensionsApi.window.startAutoResizer()
-
-    field = extensionsApi.field
-    fieldDetachValueChangeHandler = field.onValueChanged(valueChangeHandler)
-
-    urlField = extensionsApi.entry.fields.url
-    urlFieldDetachValueChangeHandler = urlField.onValueChanged(urlValueChangeHandler)
-  }
-
   const snippetTitleElement = document.querySelector('.snippet-title')
   const snippetTitleUrlElement = document.querySelector('.snippet-url')
   const snippetTitleTextElement = document.querySelector('.snippet-text')
@@ -112,6 +102,16 @@ function initExtension (extensionsApi) {
   descriptionElement.addEventListener('input', updateMetaDescription)
 
   window.addEventListener('onbeforeunload', unloadHandler)
+
+  if (!local) {
+    extensionsApi.window.startAutoResizer()
+
+    field = extensionsApi.field
+    fieldDetachValueChangeHandler = field.onValueChanged(valueChangeHandler)
+
+    urlField = extensionsApi.entry.fields.url
+    urlFieldDetachValueChangeHandler = urlField.onValueChanged(urlValueChangeHandler)
+  }
 
   function valueChangeHandler (value) {
     titleElement.value = value ? value.metaTitle || '' : ''
