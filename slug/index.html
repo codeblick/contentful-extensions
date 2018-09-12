@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="//contentful.github.io/ui-extensions-sdk/cf-extension.css">
+  <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    .cf-form-hint span.is-right {
+      float: right;
+    }
+    .cf-form-hint span.is-red {
+      color: rgb(223, 53, 55);
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="cf-form-field">
+    <div class="cf-form-field">
+      <input type="text" class="cf-form-input input-title" v-model="slug">
+      <div class="cf-form-hint">
+        <span :class="{'is-red': slug.length > 256}">{{ slug.length }} characters</span>
+        <span class="is-right">Requires less than 256 characters</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const vm = new Vue({
+  el: '#app',
+  data: {
+    slug: '',
+    api: null,
+    valueSet: false
+  },
+  watch: {
+    slug (value, oldValue) {
+      if (value !== oldValue) {
+        this.slug = this.toSlug(value)
+        this.setField()
+      }
+    }
+  },
+  methods: {
+    initalize (api) {
+      this.api = api
+      api.window.startAutoResizer()
+      api.field.onValueChanged(this.onValueChange)
+    },
+    onValueChange (value) {
+      if (this.valueSet === false) {
+        this.slug = this.toSlug(value) || ''
+      }
+    },
+    setField () {
+      if (this.api) {
+        this.api.field.setValue(this.slug)
+      }
+    },
+    toSlug (value) {
+      return value.toString().toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+    }
+  }
+})
+
+window.contentfulExtension.init(vm.initalize)
+</script>
+
+</body>
+</html>

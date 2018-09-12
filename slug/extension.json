@@ -1,0 +1,6 @@
+{
+  "id": "slug",
+  "name": "Slug",
+  "srcdoc": "./index.html",
+  "fieldTypes": ["Symbol"]
+}

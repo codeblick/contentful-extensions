@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body {
+      font-family: 'Titillium Web', sans-serif;
+      background: #1958a3;
+      height: 100%;
+      margin: 0;
+    }
+    iframe {
+      width: 100%;
+      height: calc(100% - 76px);
+      background: white;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+      padding: 12px;
+      box-sizing: border-box;
+    }
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 80%;
+    }
+    a {
+      display: block;
+      margin: 16px;
+      text-align: center;
+      text-decoration: none;
+      color: white;
+    }
+    a span {
+      display: block;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <iframe class="extension-iframe" src="index.html" frameborder="0"></iframe>
+  <a href="https://www.codeblick.de">
+    <img src="https://raw.githubusercontent.com/codeblick/contentful-extensions/master/_assets/codeblick-logo.svg?sanitize=true" alt="codeblick">
+    <span>Agentur für digitale Lösungen</span>
+  </a>
+</div>
+
+</body>
+</html>
