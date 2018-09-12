@@ -2,11 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- Core extensions CSS from Contentful. -->
   <link rel="stylesheet" href="//contentful.github.io/ui-extensions-sdk/cf-extension.css">
-  <!-- Contenful UI Extensions SDK API -->
   <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
-  <!-- Custom Styles -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   <style>
     .snippet-box {
       border: 1px solid #ccc;
@@ -53,106 +51,101 @@
     .cf-form-hint span {
       float: right;
     }
+    .cf-form-hint span.is-red {
+      color: rgb(223, 53, 55);
+    }
   </style>
 </head>
 <body>
 
-<div class="cf-form-field">
+<div id="app">
   <div class="cf-form-field">
-    <input type="text" class="cf-form-input input-title">
-    <div class="cf-form-hint">
-      meta title
+    <div class="cf-form-field">
+      <input type="text" class="cf-form-input input-title" v-model="metaTitle">
+      <div class="cf-form-hint">
+        meta title
+        <span :class="{'is-red': metaTitle.length > 70}">{{ metaTitle.length }} characters</span>
+      </div>
+    </div>
+    <div class="cf-form-field">
+      <input type="text" class="cf-form-input input-description" v-model="metaDescription">
+      <div class="cf-form-hint">
+        meta description
+        <span :class="{'is-red': metaTitle.length > 160}">{{ metaDescription.length }} characters</span>
+      </div>
     </div>
   </div>
-  <div class="cf-form-field">
-    <input type="text" class="cf-form-input input-description">
-    <div class="cf-form-hint">meta description</div>
-  </div>
-</div>
 
-<div class="snippet-box">
-  <div>
-    <div class="snippet-title">codeblick</div>
+  <div class="snippet-box">
+    <div>
+      <div class="snippet-title">{{ trimmedMetaTitle }}</div>
+    </div>
+    <div>
+      <div class="snippet-url">https://www.codeblick.de/{{ slug }}</div>
+    </div>
+    <div class="snippet-text">{{ trimmedMetaDescription }}</div>
   </div>
-  <div>
-    <div class="snippet-url">https://www.codeblick.de/</div>
-  </div>
-  <div class="snippet-text">Digitalagentur Augsburg</div>
 </div>
 
 <script>
-const local = false
-if (!local) window.contentfulExtension.init(initExtension)
-else window.onload = initExtension
-
-function initExtension (extensionsApi) {
-  let field
-  let urlField
-  let fieldDetachValueChangeHandler
-  let urlFieldDetachValueChangeHandler
-
-  const snippetTitleElement = document.querySelector('.snippet-title')
-  const snippetTitleUrlElement = document.querySelector('.snippet-url')
-  const snippetTitleTextElement = document.querySelector('.snippet-text')
-
-  const titleElement = document.querySelector('.input-title')
-  const descriptionElement = document.querySelector('.input-description')
-
-  titleElement.addEventListener('input', updateMetaTitle)
-  descriptionElement.addEventListener('input', updateMetaDescription)
-
-  window.addEventListener('onbeforeunload', unloadHandler)
-
-  if (!local) {
-    extensionsApi.window.startAutoResizer()
-
-    field = extensionsApi.field
-    fieldDetachValueChangeHandler = field.onValueChanged(valueChangeHandler)
-
-    urlField = extensionsApi.entry.fields.url
-    urlFieldDetachValueChangeHandler = urlField.onValueChanged(urlValueChangeHandler)
+const vm = new Vue({
+  el: '#app',
+  data: {
+    slug: '',
+    metaTitle: 'codeblick | E-Commerce & Webagentur Augsburg',
+    metaDescription: 'codeblick - Ihre Webagentur aus Augsburg. Wir bieten ➤ Digitale Lösungen: Webdesign, eCommerce, Webentwicklung, Onlinemarketing & mehr.',
+    api: null,
+    valueSet: false
+  },
+  watch: {
+    metaTitle (value, oldValue) {
+      if (value !== oldValue) {
+        this.setField()
+      }
+    },
+    metaDescription (value, oldValue) {
+      if (value !== oldValue) {
+        this.setField()
+      }
+    }
+  },
+  methods: {
+    initalize (api) {
+      this.api = api
+      api.window.startAutoResizer()
+      api.field.onValueChanged(this.onValueChange)
+      api.entry.fields.url.onValueChanged(this.onUrlChange)
+    },
+    onValueChange (value) {
+      if (this.valueSet === false) {
+        this.metaTitle = value ? value.metaTitle || '' : ''
+        this.metaDescription = value ? value.metaDescription || '' : ''
+        this.valueSet = true
+      }
+    },
+    onUrlChange (value) {
+      this.slug = value || ''
+    },
+    setField () {
+      if (this.api) {
+        this.api.field.setValue({
+          metaTitle: this.metaTitle,
+          metaDescription: this.metaDescription
+        })
+      }
+    }
+  },
+  computed: {
+    trimmedMetaTitle () {
+      return this.metaTitle.length > 70 ? this.metaTitle.substr(0, 70) + '...' : this.metaTitle
+    },
+    trimmedMetaDescription () {
+      return this.metaDescription.length > 160 ? this.metaDescription.substr(0, 160) + '...' : this.metaDescription
+    }
   }
+})
 
-  function valueChangeHandler (value) {
-    titleElement.value = value ? value.metaTitle || '' : ''
-    descriptionElement.value = value ? value.metaDescription || '' : ''
-  }
-
-  function urlValueChangeHandler (value) {
-    snippetTitleUrlElement.innerHTML = 'https://www.codeblick.de/' + (value || '')
-  }
-
-  function updateMetaTitle () {
-    updateField()
-
-    snippetTitleElement.innerHTML = titleElement.value.length > 70 ?
-      titleElement.value.substr(0, 70) + '...' :
-      titleElement.value
-  }
-
-  function updateMetaDescription () {
-    updateField()
-
-    snippetTitleTextElement.innerHTML = descriptionElement.value.length > 160 ?
-      descriptionElement.value.substr(0, 160) + '...' :
-      descriptionElement.value
-  }
-
-  function updateField () {
-    if (!local) field.setValue({
-      metaTitle: titleElement.value,
-      metaDescription: descriptionElement.value
-    })
-  }
-
-  function unloadHandler () {
-    window.removeEventListener('onbeforeunload', unloadHandler)
-    titleElement.removeEventListener('input', updateMetaTitle)
-    if (!local) descriptionElement.removeEventListener('input', updateMetaDescription)
-    fieldDetachValueChangeHandler()
-    urlFieldDetachValueChangeHandler()
-  }
-}
+window.contentfulExtension.init(vm.initalize)
 </script>
 
 </body>
