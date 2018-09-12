@@ -1,0 +1,6 @@
+{
+  "id": "serp",
+  "name": "SERP Generator",
+  "srcdoc": "./index.html",
+  "fieldTypes": ["Object"]
+}

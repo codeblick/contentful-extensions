@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Core extensions CSS from Contentful. -->
+  <link rel="stylesheet" href="//contentful.github.io/ui-extensions-sdk/cf-extension.css">
+  <!-- Contenful UI Extensions SDK API -->
+  <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
+  <!-- Custom Styles -->
+  <style>
+    .snippet-box {
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      padding: 30px;
+      margin: 28px 0 60px 0;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .snippet-title {
+      color: rgb(26, 13, 171);
+      cursor: pointer;
+      font-family: arial, sans-serif;
+      font-size: 18px;
+      font-weight: 400;
+      line-height: 21.6px;
+      text-align: left;
+      text-decoration: none;
+      text-decoration-color: rgb(26, 13, 171);
+      text-decoration-style: solid;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .snippet-url {
+      color: rgb(0, 102, 33);
+      font-family: arial, sans-serif;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 16px;
+      text-align: left;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    .snippet-text {
+      color: rgb(84, 84, 84);
+      font-family: arial, sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 18.2px;
+      overflow-wrap: break-word;
+      text-align: left;
+      display: inline-block;
+    }
+    .cf-form-hint span {
+      float: right;
+    }
+  </style>
+</head>
+<body>
+
+<div class="cf-form-field">
+  <input type="text" class="cf-form-input input-title">
+  <div class="cf-form-hint">
+    Meta Title
+    <span>30/40</span>
+  </div>
+</div>
+
+<div class="cf-form-field">
+  <input type="text" class="cf-form-input input-description">
+  <div class="cf-form-hint">Meta Description</div>
+</div>
+
+<div class="snippet-box">
+  <div>
+    <div class="snippet-title">codeblick</div>
+  </div>
+  <div>
+    <div class="snippet-url">https://www.codeblick.de/</div>
+  </div>
+  <div class="snippet-text">Digitalagentur Augsburg</div>
+</div>
+
+<script>
+const local = false
+if (!local) window.contentfulExtension.init(initExtension)
+else window.onload = initExtension
+
+function initExtension (extensionsApi) {
+  let field
+  let urlField
+  let fieldDetachValueChangeHandler
+  let urlFieldDetachValueChangeHandler
+
+  if (!local) {
+    extensionsApi.window.startAutoResizer()
+
+    field = extensionsApi.field
+    fieldDetachValueChangeHandler = field.onValueChanged(valueChangeHandler)
+
+    urlField = extensionsApi.entry.fields.url
+    urlFieldDetachValueChangeHandler = urlField.onValueChanged(urlValueChangeHandler)
+  }
+
+  const snippetTitleElement = document.querySelector('.snippet-title')
+  const snippetTitleUrlElement = document.querySelector('.snippet-url')
+  const snippetTitleTextElement = document.querySelector('.snippet-text')
+
+  const titleElement = document.querySelector('.input-title')
+  const descriptionElement = document.querySelector('.input-description')
+
+  titleElement.addEventListener('input', updateMetaTitle)
+  descriptionElement.addEventListener('input', updateMetaDescription)
+
+  window.addEventListener('onbeforeunload', unloadHandler)
+
+  function valueChangeHandler (value) {
+    titleElement.value = value ? value.metaTitle || '' : ''
+    descriptionElement.value = value ? value.metaDescription || '' : ''
+  }
+
+  function urlValueChangeHandler (value) {
+    snippetTitleUrlElement.value = 'https://www.codeblick.de/' + (value || '')
+  }
+
+  function updateMetaTitle () {
+    updateField()
+
+    snippetTitleElement.innerHTML = titleElement.value.length > 70 ?
+      titleElement.value.substr(0, 70) + '...' :
+      titleElement.value
+  }
+
+  function updateMetaDescription () {
+    updateField()
+
+    snippetTitleTextElement.innerHTML = descriptionElement.value.length > 160 ?
+      descriptionElement.value.substr(0, 160) + '...' :
+      descriptionElement.value
+  }
+
+  function updateField () {
+    if (!local) field.setValue({
+      metaTitle: titleElement.value,
+      metaDescription: descriptionElement.value
+    })
+  }
+
+  function unloadHandler () {
+    window.removeEventListener('onbeforeunload', unloadHandler)
+    titleElement.removeEventListener('input', updateMetaTitle)
+    if (!local) descriptionElement.removeEventListener('input', updateMetaDescription)
+    fieldDetachValueChangeHandler()
+    urlFieldDetachValueChangeHandler()
+  }
+}
+</script>
+
+</body>
+</html>
