@@ -2,7 +2,7 @@
 
 This folder contains a set of extensions using the [UI extensions SDK](https://github.com/contentful/ui-extensions-sdk).
 
-## SERP Generator
+## SERP Preview
 
 This extension adds a preview for url, meta title and meta description. The field itself doesn't contain the url. 
 It will search for a field called "slug" in the same entry. It extends the "JSON object" type.
