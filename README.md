@@ -8,3 +8,7 @@ This extension adds a preview for url, meta title and meta description. The fiel
 It will search for a field called "url" in the same entry.
 
 [You can find a demo here.](https://codeblick.github.io/contentful-extensions/serp/demo.html)
+
+If you wan't to install the extension just pass this url to contentful:
+
+`https://raw.githubusercontent.com/codeblick/contentful-extensions/master/serp/extension.json`
