@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="//contentful.github.io/ui-extensions-sdk/cf-extension.css">
+  <script src="https://unpkg.com/contentful-ui-extensions-sdk@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    .cf-form-hint span.is-right {
+      float: right;
+    }
+    .columns {
+      display: flex;
+    }
+    .column-1 {
+      padding-right: 16px;
+    }
+    .column-2 {
+      flex-grow: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="cf-form-field">
+    <div class="cf-form-field">
+      <div class="columns">
+        <div class="column-1">
+          <select class="cf-form-input input-title" v-model="tag">
+            <option value="h1">h1</option>
+            <option value="h2">h2</option>
+            <option value="h3">h3</option>
+            <option value="h4">h4</option>
+            <option value="h5">h5</option>
+            <option value="h6">h6</option>
+          </select>
+        </div>
+        <div class="column-2">
+          <input type="text" class="cf-form-input input-title" v-model="title">
+          <div class="cf-form-hint">
+            <span :class="{'is-red': slug.length > 256}">{{ title.length }} characters</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const vm = new Vue({
+  el: '#app',
+  data: {
+    slug: '',
+    tag: 'h1',
+    title: 'Hallo Welt!',
+    api: null,
+    valueSet: false
+  },
+  watch: {
+    tag (value, oldValue) {
+      if (value !== oldValue) {
+        this.setField()
+      }
+    },
+    title (value, oldValue) {
+      if (value !== oldValue) {
+        this.setField()
+      }
+    }
+  },
+  methods: {
+    initalize (api) {
+      this.api = api
+      api.window.startAutoResizer()
+      api.field.onValueChanged(this.onValueChange)
+    },
+    onValueChange (value) {
+      if (this.valueSet === false) {
+        this.tag = value ? value.tag || '' : ''
+        this.title = value ? value.title || '' : ''
+        this.valueSet = true
+      }
+    },
+    setField () {
+      if (this.api) {
+        this.api.field.setValue({
+          tag: this.tag,
+          title: this.title
+        })
+      }
+    }
+  }
+})
+
+window.contentfulExtension.init(vm.initalize)
+</script>
+
+</body>
+</html>

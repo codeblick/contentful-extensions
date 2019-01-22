@@ -1,0 +1,6 @@
+{
+  "id": "heading",
+  "name": "Heading",
+  "srcdoc": "./index.html",
+  "fieldTypes": ["Object"]
+}
